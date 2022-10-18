@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>To-do list</title>
+</head>
+<body>
+    
+</body>
+</html>
+
+  <style>
+    * {
+  font-family: 'Roboto Condensed', sans-serif;
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background-color: bisque;
+  min-height: 100vh;
+}
+
+input {
+  border: hidden;
+}
+
+textarea {
+  border: hidden;
+  resize: none;
+  width: 100%;
+  height: 35px;
+  padding-top: 6px;
+  margin-left: 5px;
+}
+
+.textCenter {
+  text-align: center;
+}
+
+.strike {
+  text-decoration: line-through;
+}
+
+#main {
+  align-items: center;
+  justify-content: center;
+  min-height: 80vh;
+}
+
+.dFlex {
+  display: flex;
+}
+
+.dNone {
+  display: none;
+}
+
+.fGrow {
+  flex-grow: 1;
+}
+
+.justBetween {
+  justify-content: space-between;
+  align-items: center;
+}
+
+.littlePadLeft {
+  padding-left: 10px;
+}
+
+.mr10p {
+  margin-right: 10px;
+}
+
+.w100 {
+  width: 100%;
+}
+
+.borderBottom {
+  border-bottom: 1px solid #eee;
+}
+
+
+.italic {
+  font-style: italic;
+}
+
+.clearAll button {
+  background-color: inherit;
+  width: 100%;
+  height: 100%;
+}
+
+li.dFlex button {
+  background-color: white;
+  width: 20px;
+  height: 38px;
+}
+
+#list {
+  width: 40%;
+  background-color: white;
+  box-shadow: 5px 5px 15px;
+}
+
+.pad10_5 {
+  padding: 10px 5px;
+}
+
+li {
+  list-style: none;
+  height: 50px;
+}
+
+.posRelative {
+  position: relative;
+}
+
+.enterIcon {
+  background-color: white;
+  font-size: 30px;
+  color: gray;
+  margin-right: 10px;
+}
+  </style>
+
+</head>
+<body>
+    <h1 style="text-align: center";> To-do list</h1>
+  <p class="textCenter">One click on each task to see erase icon and double click to edit task.</p>
+  <section id="main" class="dFlex">
+    <ul id="list">
+      <li class="dFlex justBetween borderBottom pad10_5">
+        <p>Today's To Do</p>
+        <i class="fa-solid fa-arrows-rotate"></i>
+      </li>
+      <li class="borderBottom">
+        <form id="addForm" class="posRelative dFlex " action="" method="post"
+          ><input required class="w100  littlePadLeft italic" type="text" name="task" value="" placeholder="Add to your list...">
+          <input class="enterIcon" type="submit" name="" value="&#8629;">
+        </form>
+      </li>
+      <div id="taskList" class="">
+
+
+      </div>
+    </ul>
+  </section>
+
+</body>
+
+<script>
+    import './style.css';
+import { TaskList } from './modules/taskList.js';
+
+import { listFooter } from './modules/listFooter.js';
+
+import { checked } from './modules/check.js';
+import { clearComplete } from './modules/clearComplete.js';
+
+const myTaskList = new TaskList();
+const form = document.getElementById('addForm');
+const tasksContainer = document.getElementById('taskList');
+const list = document.getElementById('list');
+const clearButton = listFooter();
+
+myTaskList.getLocalData();
+myTaskList.displayList();
+list.appendChild(clearButton);
+
+/* add task eventListner */
+form.addEventListener('submit', (event) => {
+  event.preventDefault();
+  const indexAssign = myTaskList.taskArray.length + 1;
+  myTaskList.addTask(form.firstChild.value, false, indexAssign);
+  form.firstChild.value = '';
+  myTaskList.displayList();
+});
+
+/* update task addEventListener */
+tasksContainer.addEventListener('click', (e) => {
+  if (e.target.classList.contains('pTask')) {
+    const arrayVal = myTaskList.togglePtoTextArea(e.target);
+    const elementIndex = arrayVal[1];
+    const delButton = arrayVal[2];
+    arrayVal[0].addEventListener('blur', (e) => {
+      myTaskList.updateTask(e.target, elementIndex, delButton);
+    });
+    delButton.addEventListener('click', (e) => {
+      myTaskList.removeTask(e.target, elementIndex);
+    });
+  }
+  if (e.target.classList.contains('check')) {
+    e.target.addEventListener('change', (e) => {
+      checked(e.target, myTaskList.taskArray);
+      myTaskList.displayList();
+    });
+  }
+});
+
+// clear all completed
+clearButton.addEventListener('click', () => {
+  clearComplete(myTaskList.taskArray);
+  myTaskList.getLocalData();
+  myTaskList.displayList();
+});
+</script>
+</html>
